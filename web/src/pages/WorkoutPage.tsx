@@ -4,6 +4,7 @@ import { useTelegram } from '../hooks/useTelegram';
 import { Dumbbell, Play, Plus } from 'lucide-react';
 import { ExerciseCatalog, type Exercise } from '../components/ExerciseCatalog';
 import { ActiveExercise } from '../components/ActiveExercise';
+import WebApp from '@twa-dev/sdk';
 
 interface WorkoutSession {
 	id: number;
@@ -12,7 +13,7 @@ interface WorkoutSession {
 }
 
 export const WorkoutPage = () => {
-	const { user, triggerHaptic } = useTelegram();
+	const { user, triggerHaptic, showPopup } = useTelegram();
 	const [session, setSession] = useState<WorkoutSession | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -39,8 +40,45 @@ export const WorkoutPage = () => {
 		setIsCatalogOpen(false);
 	};
 
+
 	const handleSaveSet = async (weight: number, reps: number) => {
-		console.log(`Сохранен подход: ${weight} кг на ${reps} повторений`);
+		if (!session || !currentExercise) return;
+
+		try {
+			await apiClient.post('/workouts/sets', {
+				workout_session_id: session.id,
+				exercise_id: currentExercise.id,
+				weight: weight,
+				reps: reps
+			});
+			triggerHaptic('medium');
+			showPopup(`Записано: ${weight}кг × ${reps}`);
+		} catch (error) {
+			console.error('Ошибка сохранения подхода:', error);
+			showPopup('Ошибка сети. Попробуйте еще раз.');
+		}
+	};
+
+	const handleFinishWorkout = async () => {
+		if (!session) return;
+
+		WebApp.showConfirm("Завершить текущую тренировку?", async (confirmed) => {
+			if (confirmed) {
+				try {
+					setIsLoading(true);
+					await apiClient.post('/workouts/finish', {
+						workout_session_id: session.id
+					});
+					triggerHaptic('heavy');
+					setSession(null);
+					setCurrentExercise(null);
+				} catch (error) {
+					console.error('Ошибка завершения:', error);
+				} finally {
+					setIsLoading(false);
+				}
+			}
+		});
 	};
 
 	return (
@@ -66,7 +104,6 @@ export const WorkoutPage = () => {
 					</div>
 				) : (
 					<div className="flex flex-col h-full animate-in fade-in duration-500">
-						{/* Статус сессии */}
 						<div className="flex justify-between items-center mb-6 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
 							<div className="flex items-center gap-2">
 								<div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -78,7 +115,7 @@ export const WorkoutPage = () => {
 						</div>
 
 						{currentExercise ? (
-							<div className="flex-1">
+							<div className="flex-1 flex flex-col">
 								<ActiveExercise
 									exerciseId={currentExercise.id}
 									exerciseName={currentExercise.name}
@@ -111,6 +148,16 @@ export const WorkoutPage = () => {
 								</button>
 							</div>
 						)}
+
+						<div className="mt-8 pt-4 border-t border-slate-800">
+							<button
+								onClick={handleFinishWorkout}
+								disabled={isLoading}
+								className="w-full py-4 rounded-2xl font-bold text-red-400 bg-red-500/10 border border-red-500/20 active:bg-red-500/20 transition-colors"
+							>
+								ЗАВЕРШИТЬ ТРЕНИРОВКУ
+							</button>
+						</div>
 					</div>
 				)}
 			</div>
