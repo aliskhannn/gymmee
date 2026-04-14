@@ -67,3 +67,28 @@ func (h *HabitHandler) Toggle(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+type CreateHabitRequest struct {
+	Name string `json:"name"`
+}
+
+// Create handles POST requests to add a new habit.
+func (h *HabitHandler) Create(w http.ResponseWriter, r *http.Request) {
+	tgUser, _ := r.Context().Value(UserContextKey).(*TelegramUser)
+	user, _ := h.userService.GetOrCreateUser(r.Context(), tgUser.ID, &tgUser.Username)
+
+	var req CreateHabitRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid body", http.StatusBadRequest)
+		return
+	}
+
+	habit, err := h.habitService.CreateHabit(r.Context(), user.ID, req.Name)
+	if err != nil {
+		http.Error(w, "Failed to create habit", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(habit)
+}
