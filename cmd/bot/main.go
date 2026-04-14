@@ -3,15 +3,19 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 
 	"github.com/aliskhannn/gym-log/internal/config"
+	deliveryhttp "github.com/aliskhannn/gym-log/internal/delivery/http"
 	"github.com/aliskhannn/gym-log/internal/delivery/telegram"
 	"github.com/aliskhannn/gym-log/internal/infra/db"
 	"github.com/aliskhannn/gym-log/internal/repository/sqlite"
@@ -42,14 +46,21 @@ func main() {
 	// 5. Initialize Services
 	userService := service.NewUserService(userRepo)
 
-	// 6. Initialize Delivery (Telegram Handler)
+	// 6. Initialize Delivery (Telegram & HTTP Handlers)
 	tgHandler := telegram.NewHandler(userService, cfg.MiniAppURL)
 
-	// 7. Initialize and configure Telegram Bot
+	httpUserHandler := deliveryhttp.NewUserHandler(userService)
+	router := deliveryhttp.SetupRouter(cfg.BotToken, httpUserHandler)
+
+	// 7. Configure HTTP Server
+	srv := &http.Server{
+		Addr:    cfg.ServerAddress,
+		Handler: router,
+	}
+
+	// 8. Configure Telegram Bot
 	opts := []bot.Option{
-		bot.WithDefaultHandler(func(ctx context.Context, b *bot.Bot, update *models.Update) {
-			// Optional: handle unknown messages
-		}),
+		bot.WithDefaultHandler(func(ctx context.Context, b *bot.Bot, update *models.Update) {}),
 	}
 
 	tgBot, err := bot.New(cfg.BotToken, opts...)
@@ -60,9 +71,27 @@ func main() {
 	// Register commands
 	tgBot.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, tgHandler.Start)
 
-	// 8. Start the bot
-	log.Println("Bot is running...")
+	// 9. Start HTTP Server in a goroutine
+	go func() {
+		log.Printf("HTTP server is running on %s...", cfg.ServerAddress)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+
+	// 10. Start Telegram Bot (blocks until ctx is canceled via SIGINT/SIGTERM)
+	log.Println("Telegram bot is running...")
 	tgBot.Start(ctx)
+
+	// 11. Graceful Shutdown for HTTP Server
+	log.Println("Shutting down gracefully...")
+
+	shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("HTTP server shutdown error: %v", err)
+	}
 
 	log.Println("Graceful shutdown completed")
 }

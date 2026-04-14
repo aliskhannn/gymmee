@@ -11,6 +11,7 @@ import (
 	"github.com/aliskhannn/gym-log/internal/domain"
 )
 
+// UserService defines the methods required by the UserHandler.
 type UserService interface {
 	GetOrCreateUser(ctx context.Context, telegramID int64, username *string) (*domain.User, error)
 }
