@@ -42,15 +42,28 @@ func main() {
 
 	// 4. Initialize Repositories
 	userRepo := sqlite.NewUserRepository(database)
+	workoutRepo := sqlite.NewWorkoutRepository(database)
+	exerciseRepo := sqlite.NewExerciseRepository(database)
+	habitRepo := sqlite.NewHabitRepository(database)
 
 	// 5. Initialize Services
 	userService := service.NewUserService(userRepo)
+	workoutService := service.NewWorkoutService(workoutRepo, exerciseRepo)
+	habitService := service.NewHabitService(habitRepo)
 
 	// 6. Initialize Delivery (Telegram & HTTP Handlers)
 	tgHandler := telegram.NewHandler(userService, cfg.MiniAppURL)
 
 	httpUserHandler := deliveryhttp.NewUserHandler(userService)
-	router := deliveryhttp.SetupRouter(cfg.BotToken, httpUserHandler)
+	httpWorkoutHandler := deliveryhttp.NewWorkoutHandler(workoutService, userService)
+	httpHabitHandler := deliveryhttp.NewHabitHandler(habitService, userService)
+
+	router := deliveryhttp.SetupRouter(
+		cfg.BotToken,
+		httpUserHandler,
+		httpWorkoutHandler,
+		httpHabitHandler,
+	)
 
 	// 7. Configure HTTP Server
 	srv := &http.Server{
