@@ -77,3 +77,27 @@ func (s *WorkoutService) StartSession(ctx context.Context, userID int64, planDay
 
 	return session, nil
 }
+
+// AddSet records a new set for an active workout session.
+func (s *WorkoutService) AddSet(ctx context.Context, sessionID, exerciseID int64, weight float64, reps int) (*domain.WorkoutSet, error) {
+	set := &domain.WorkoutSet{
+		WorkoutSessionID: sessionID,
+		ExerciseID:       exerciseID,
+		Weight:           weight,
+		Reps:             reps,
+	}
+
+	if err := s.workoutRepo.AddSet(ctx, set); err != nil {
+		return nil, fmt.Errorf("failed to add set: %w", err)
+	}
+
+	return set, nil
+}
+
+// FinishSession marks a workout session as completed.
+func (s *WorkoutService) FinishSession(ctx context.Context, sessionID int64) error {
+	if err := s.workoutRepo.FinishSession(ctx, sessionID); err != nil {
+		return fmt.Errorf("failed to finish session: %w", err)
+	}
+	return nil
+}

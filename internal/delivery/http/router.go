@@ -20,6 +20,8 @@ func SetupRouter(
 	// API Endpoints - Workouts
 	mux.HandleFunc("POST /api/workouts/start", AuthMiddleware(botToken, workoutHandler.StartSession))
 	mux.HandleFunc("GET /api/workouts/hints", AuthMiddleware(botToken, workoutHandler.GetHint))
+	mux.HandleFunc("POST /api/workouts/sets", AuthMiddleware(botToken, workoutHandler.AddSet))
+	mux.HandleFunc("POST /api/workouts/finish", AuthMiddleware(botToken, workoutHandler.FinishSession))
 
 	// API Endpoints - Habits
 	mux.HandleFunc("GET /api/habits/daily", AuthMiddleware(botToken, habitHandler.GetDaily))

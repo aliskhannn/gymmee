@@ -14,6 +14,8 @@ import (
 type WorkoutService interface {
 	StartSession(ctx context.Context, userID int64, planDayID *int64) (*domain.WorkoutSession, error)
 	GetExerciseHint(ctx context.Context, user *domain.User, exerciseID int64) (*service.SetHintResult, error)
+	AddSet(ctx context.Context, sessionID, exerciseID int64, weight float64, reps int) (*domain.WorkoutSet, error)
+	FinishSession(ctx context.Context, sessionID int64) error
 }
 
 // WorkoutHandler handles HTTP requests related to workouts.
@@ -106,4 +108,49 @@ func (h *WorkoutHandler) GetHint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(hint)
+}
+
+type AddSetRequest struct {
+	WorkoutSessionID int64   `json:"workout_session_id"`
+	ExerciseID       int64   `json:"exercise_id"`
+	Weight           float64 `json:"weight"`
+	Reps             int     `json:"reps"`
+}
+
+// AddSet handles POST requests to log a new set.
+func (h *WorkoutHandler) AddSet(w http.ResponseWriter, r *http.Request) {
+	var req AddSetRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid body", http.StatusBadRequest)
+		return
+	}
+
+	set, err := h.workoutService.AddSet(r.Context(), req.WorkoutSessionID, req.ExerciseID, req.Weight, req.Reps)
+	if err != nil {
+		http.Error(w, "Failed to add set", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(set)
+}
+
+type FinishSessionRequest struct {
+	WorkoutSessionID int64 `json:"workout_session_id"`
+}
+
+// FinishSession handles POST requests to complete a workout.
+func (h *WorkoutHandler) FinishSession(w http.ResponseWriter, r *http.Request) {
+	var req FinishSessionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.workoutService.FinishSession(r.Context(), req.WorkoutSessionID); err != nil {
+		http.Error(w, "Failed to finish session", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
