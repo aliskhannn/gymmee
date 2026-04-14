@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    environment:
+      - GOOSE_DBSTRING=./data/gymlog.db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+    depends_on:
+      - backend
+    restart: unless-stopped
