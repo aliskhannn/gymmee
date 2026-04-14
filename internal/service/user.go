@@ -8,8 +8,6 @@ import (
 	"github.com/aliskhannn/gym-log/internal/domain"
 )
 
-
-
 // UserService coordinates business operations related to users.
 type UserService struct {
 	repo UserRepository
@@ -44,4 +42,12 @@ func (s *UserService) GetOrCreateUser(ctx context.Context, telegramID int64, use
 	}
 
 	return newUser, nil
+}
+
+// UpdateUser updates the user's profile information.
+func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) error {
+	if err := s.repo.Update(ctx, user); err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+	return nil
 }

@@ -16,6 +16,7 @@ type WorkoutService interface {
 	GetExerciseHint(ctx context.Context, user *domain.User, exerciseID int64) (*service.SetHintResult, error)
 	AddSet(ctx context.Context, sessionID, exerciseID int64, weight float64, reps int) (*domain.WorkoutSet, error)
 	FinishSession(ctx context.Context, sessionID int64) error
+	GetHistory(ctx context.Context, userID int64) ([]domain.WorkoutSession, error) // <-- Добавили
 }
 
 // WorkoutHandler handles HTTP requests related to workouts.
@@ -153,4 +154,32 @@ func (h *WorkoutHandler) FinishSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetHistory handles GET requests to fetch user's past workouts.
+func (h *WorkoutHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
+	tgUser, ok := r.Context().Value(UserContextKey).(*TelegramUser)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	user, err := h.userService.GetOrCreateUser(r.Context(), tgUser.ID, &tgUser.Username)
+	if err != nil {
+		http.Error(w, "Failed to identify user", http.StatusInternalServerError)
+		return
+	}
+
+	history, err := h.workoutService.GetHistory(r.Context(), user.ID)
+	if err != nil {
+		http.Error(w, "Failed to fetch history", http.StatusInternalServerError)
+		return
+	}
+
+	if history == nil {
+		history = []domain.WorkoutSession{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(history)
 }

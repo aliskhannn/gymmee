@@ -31,6 +31,7 @@ type WorkoutRepository interface {
 	FinishSession(ctx context.Context, sessionID int64) error
 	AddSet(ctx context.Context, set *domain.WorkoutSet) error
 	GetLastSetStats(ctx context.Context, userID, exerciseID int64) (*sqlite.LastSetStats, error)
+	GetHistory(ctx context.Context, userID int64) ([]domain.WorkoutSession, error) // <-- Добавили
 }
 
 // ExerciseRepository defines the data access methods for exercises.

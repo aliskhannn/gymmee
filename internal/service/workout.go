@@ -101,3 +101,12 @@ func (s *WorkoutService) FinishSession(ctx context.Context, sessionID int64) err
 	}
 	return nil
 }
+
+// GetHistory returns all completed workout sessions for a user.
+func (s *WorkoutService) GetHistory(ctx context.Context, userID int64) ([]domain.WorkoutSession, error) {
+	sessions, err := s.workoutRepo.GetHistory(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get workout history: %w", err)
+	}
+	return sessions, nil
+}

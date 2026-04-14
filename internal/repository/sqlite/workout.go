@@ -117,3 +117,13 @@ func (r *WorkoutRepository) GetLastSetStats(ctx context.Context, userID, exercis
 
 	return &stats, nil
 }
+
+// GetHistory retrieves all completed workout sessions for a user.
+func (r *WorkoutRepository) GetHistory(ctx context.Context, userID int64) ([]domain.WorkoutSession, error) {
+	query := `SELECT * FROM workout_sessions WHERE user_id = $1 AND ended_at IS NOT NULL ORDER BY started_at DESC`
+	var sessions []domain.WorkoutSession
+	if err := r.db.SelectContext(ctx, &sessions, query, userID); err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
