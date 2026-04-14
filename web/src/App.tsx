@@ -1,16 +1,27 @@
-import WebApp from '@twa-dev/sdk';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { WorkoutPage } from './pages/WorkoutPage';
+
+const DummyPage = ({ title }: { title: string }) => (
+  <div className="p-4 flex items-center justify-center h-full text-slate-400">
+    <h2 className="text-xl">{title} (В разработке)</h2>
+  </div>
+);
 
 function App() {
-	const user = WebApp.initDataUnsafe?.user;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<WorkoutPage />} />
 
-	return (
-		<div className="p-4 flex flex-col items-center justify-center min-h-screen">
-			<h1 className="text-3xl font-bold text-blue-500 mb-2">Gymmee</h1>
-			<p className="text-slate-400">
-				Привет, {user?.first_name || 'Атлет'}!
-			</p>
-		</div>
-	)
+          <Route path="history" element={<DummyPage title="История тренировок" />} />
+          <Route path="habits" element={<DummyPage title="Трекер привычек" />} />
+          <Route path="profile" element={<DummyPage title="Профиль и настройки" />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
