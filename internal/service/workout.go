@@ -7,24 +7,8 @@ import (
 	"fmt"
 
 	"github.com/aliskhannn/gym-log/internal/domain"
-	"github.com/aliskhannn/gym-log/internal/repository/sqlite"
 	"github.com/aliskhannn/gym-log/pkg/calculator"
 )
-
-// WorkoutRepository defines the data access methods for workouts.
-type WorkoutRepository interface {
-	CreateSession(ctx context.Context, session *domain.WorkoutSession) error
-	GetActiveSession(ctx context.Context, userID int64) (*domain.WorkoutSession, error)
-	FinishSession(ctx context.Context, sessionID int64) error
-	AddSet(ctx context.Context, set *domain.WorkoutSet) error
-	GetLastSetStats(ctx context.Context, userID, exerciseID int64) (*sqlite.LastSetStats, error)
-}
-
-// ExerciseRepository defines the data access methods for exercises.
-type ExerciseRepository interface {
-	GetSystemExercises(ctx context.Context) ([]domain.Exercise, error)
-	GetUserExercises(ctx context.Context, userID int64) ([]domain.Exercise, error)
-}
 
 // WorkoutService coordinates business operations related to workouts.
 type WorkoutService struct {

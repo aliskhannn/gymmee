@@ -7,14 +7,6 @@ import (
 	"github.com/aliskhannn/gym-log/internal/domain"
 )
 
-// HabitRepository defines the data access methods for habits.
-type HabitRepository interface {
-	Create(ctx context.Context, habit *domain.Habit) error
-	GetUserHabits(ctx context.Context, userID int64) ([]domain.Habit, error)
-	GetDailyLogs(ctx context.Context, userID int64, date time.Time) ([]domain.HabitLog, error)
-	ToggleLog(ctx context.Context, habitID int64, date time.Time, completed bool) error
-}
-
 // HabitWithStatus combines a habit with its completion status for a specific day.
 type HabitWithStatus struct {
 	domain.Habit

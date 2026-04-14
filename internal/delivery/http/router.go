@@ -10,6 +10,7 @@ func SetupRouter(
 	userHandler *UserHandler,
 	workoutHandler *WorkoutHandler,
 	habitHandler *HabitHandler,
+	exerciseHandler *ExerciseHandler,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
 
@@ -23,6 +24,9 @@ func SetupRouter(
 	// API Endpoints - Habits
 	mux.HandleFunc("GET /api/habits/daily", AuthMiddleware(botToken, habitHandler.GetDaily))
 	mux.HandleFunc("POST /api/habits/toggle", AuthMiddleware(botToken, habitHandler.Toggle))
+
+	// API Endpoints - Exercises
+	mux.HandleFunc("GET /api/exercises", AuthMiddleware(botToken, exerciseHandler.GetAll))
 
 	return mux
 }

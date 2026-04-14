@@ -8,13 +8,7 @@ import (
 	"github.com/aliskhannn/gym-log/internal/domain"
 )
 
-// UserRepository defines the data access methods required by the UserService.
-type UserRepository interface {
-	Create(ctx context.Context, user *domain.User) error
-	GetByID(ctx context.Context, id int64) (*domain.User, error)
-	GetByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
-	Update(ctx context.Context, user *domain.User) error
-}
+
 
 // UserService coordinates business operations related to users.
 type UserService struct {

@@ -50,6 +50,7 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	workoutService := service.NewWorkoutService(workoutRepo, exerciseRepo)
 	habitService := service.NewHabitService(habitRepo)
+	exerciseService := service.NewExerciseService(exerciseRepo)
 
 	// 6. Initialize Delivery (Telegram & HTTP Handlers)
 	tgHandler := telegram.NewHandler(userService, cfg.MiniAppURL)
@@ -57,12 +58,14 @@ func main() {
 	httpUserHandler := deliveryhttp.NewUserHandler(userService)
 	httpWorkoutHandler := deliveryhttp.NewWorkoutHandler(workoutService, userService)
 	httpHabitHandler := deliveryhttp.NewHabitHandler(habitService, userService)
+	httpExerciseHandler := deliveryhttp.NewExerciseHandler(exerciseService, userService)
 
 	router := deliveryhttp.SetupRouter(
 		cfg.BotToken,
 		httpUserHandler,
 		httpWorkoutHandler,
 		httpHabitHandler,
+		httpExerciseHandler,
 	)
 
 	// 7. Configure HTTP Server
