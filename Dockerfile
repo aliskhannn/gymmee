@@ -14,6 +14,8 @@ RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 FROM alpine:latest
 WORKDIR /app
 
+RUN apk add --no-cache sqlite
+
 COPY --from=builder /app/bot .
 COPY --from=builder /go/bin/goose /usr/local/bin/goose
 COPY --from=builder /app/migrations ./migrations

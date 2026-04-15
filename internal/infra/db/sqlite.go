@@ -15,13 +15,11 @@ func NewSqliteDB(dsn string) (*sqlx.DB, error) {
 		return nil, fmt.Errorf("failed to connect to sqlite: %w", err)
 	}
 
-	// Обязательно для SQLite: включаем поддержку внешних ключей
 	_, err = db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		return nil, fmt.Errorf("failed to enable foreign keys: %w", err)
 	}
 
-	// Настройка пула соединений (важно для production)
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 

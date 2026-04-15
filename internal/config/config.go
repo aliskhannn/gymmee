@@ -23,8 +23,8 @@ func MustLoad() (*Config, error) {
 	cfg := &Config{
 		Env:           getEnv("ENV", "development"),
 		BotToken:      getEnv("BOT_TOKEN", ""),
-		MiniAppURL:    getEnv("MINI_APP_URL", "https://t.me/your_bot/app"),
-		DatabaseURL:   getEnv("GOOSE_DBSTRING", "./gymlog.db"),
+		MiniAppURL:    getEnv("MINI_APP_URL", "https://gymmee.aliskhan.ru"),
+		DatabaseURL:   getEnv("APP_DB_PATH", "./gymmee.db"),
 		ServerAddress: getEnv("SERVER_ADDRESS", ":8080"),
 	}
 
