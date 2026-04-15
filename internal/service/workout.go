@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
-	"github.com/aliskhannn/gym-log/pkg/calculator"
+	"github.com/aliskhannn/gymmee/internal/domain"
+	"github.com/aliskhannn/gymmee/pkg/calculator"
 )
 
 // WorkoutService coordinates business operations related to workouts.

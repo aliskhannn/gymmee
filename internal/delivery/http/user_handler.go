@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/domain"
 )
 
 // UserService defines the methods required by the UserHandler.

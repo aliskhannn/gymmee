@@ -1,4 +1,4 @@
-// Package main is the entry point for the gym-log telegram bot backend.
+// Package main is the entry point for the gymmee telegram bot backend.
 package main
 
 import (
@@ -14,12 +14,12 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 
-	"github.com/aliskhannn/gym-log/internal/config"
-	deliveryhttp "github.com/aliskhannn/gym-log/internal/delivery/http"
-	"github.com/aliskhannn/gym-log/internal/delivery/telegram"
-	"github.com/aliskhannn/gym-log/internal/infra/db"
-	"github.com/aliskhannn/gym-log/internal/repository/sqlite"
-	"github.com/aliskhannn/gym-log/internal/service"
+	"github.com/aliskhannn/gymmee/internal/config"
+	deliveryhttp "github.com/aliskhannn/gymmee/internal/delivery/http"
+	"github.com/aliskhannn/gymmee/internal/delivery/telegram"
+	"github.com/aliskhannn/gymmee/internal/infra/db"
+	"github.com/aliskhannn/gymmee/internal/repository/sqlite"
+	"github.com/aliskhannn/gymmee/internal/service"
 )
 
 func main() {

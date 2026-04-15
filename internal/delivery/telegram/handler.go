@@ -8,7 +8,7 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/domain"
 )
 
 // UserService defines the methods required by the UserHandler.

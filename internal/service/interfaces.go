@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
-	"github.com/aliskhannn/gym-log/internal/repository/sqlite"
+	"github.com/aliskhannn/gymmee/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/repository/sqlite"
 )
 
 // UserRepository defines the data access methods required by the UserService.

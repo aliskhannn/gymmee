@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/domain"
 )
 
 // UserService coordinates business operations related to users.

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/domain"
 )
 
 // HabitWithStatus combines a habit with its completion status for a specific day.

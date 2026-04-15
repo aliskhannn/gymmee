@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
-	"github.com/aliskhannn/gym-log/internal/service"
+	"github.com/aliskhannn/gymmee/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/service"
 )
 
 // WorkoutService defines the methods required by the WorkoutHandler.

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aliskhannn/gym-log/internal/domain"
-	"github.com/aliskhannn/gym-log/internal/service"
+	"github.com/aliskhannn/gymmee/internal/domain"
+	"github.com/aliskhannn/gymmee/internal/service"
 )
 
 // HabitService defines methods for managing habits in the HTTP layer.
